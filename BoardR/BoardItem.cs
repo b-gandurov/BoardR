@@ -1,24 +1,29 @@
-﻿using System;
+﻿using BoardR.Helpers;
+using System;
 using System.Text;
 
 namespace BoardR
 {
     public class BoardItem
     {
-        private string _title;
-        private DateTime _dueDate;
-        private Status _status;
+        protected string _title;
+        protected DateTime _dueDate;
+        protected Status _status;
         private List<EventLog> _history = new List<EventLog>();
-        private string dateFormat = "dd-MM-yyyy";
+        protected string dateFormat = "dd-MM-yyyy";
+        protected string _titleStatusDueDate;
+ 
+        
 
-        public BoardItem(string title, DateTime dueDate)
+        public BoardItem(string title, DateTime dueDate, Status status = Status.Open)
         {
-
+            ValidationHelpers.ValidateString(title, "Title");
             _title = title;
             _dueDate = dueDate;
-            _status = Status.Open;
-            _history.Add(new EventLog($"Item created: '{title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
-        }
+            _status = status;
+            _titleStatusDueDate = $"'{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]";
+
+    }
 
         public string Title
         {
@@ -28,15 +33,9 @@ namespace BoardR
             }
             set
             {
-                if (value.Length >= 5 && value.Length <= 30 && !string.IsNullOrWhiteSpace(value))
-                {
-                    _history.Add(new EventLog($"Title changed from '{_title}' to '{value}'"));
-                    _title = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Title must be between 5 and 30 characters long.");
-                }
+                ValidationHelpers.ValidateString(value, "Title");
+                _history.Add(new EventLog($"Title changed from '{_title}' to '{value}'"));
+                _title = value;
             }
         }
 
@@ -97,7 +96,7 @@ namespace BoardR
 
         public string ViewInfo()
         {
-            return $"'{_title}', [{_status}|{_dueDate.ToString("dd-MM-yyyy")}]";
+            return $"'{_title}', [{_status}|{_dueDate.ToString("dd-MM-yyyy")}] - {this.GetType().Name}";
         }
 
         public string ViewHistory()
@@ -114,6 +113,11 @@ namespace BoardR
             }
 
             return historyLog.ToString();
+        }
+
+        protected void AddActivityLog(string message)
+        {
+            _history.Add(new EventLog(message));
         }
     }
 }

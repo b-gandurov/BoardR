@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace BoardR
 {
@@ -23,6 +24,19 @@ namespace BoardR
             {
                 return items.Count;
             }
+        }
+
+        public static string PrintItems()
+        {
+
+            StringBuilder boardItems = new StringBuilder();
+            foreach (BoardItem item in items)
+            {
+                string itemToString = item.ViewInfo();
+                boardItems.AppendLine(itemToString);
+            }
+
+            return boardItems.ToString();
         }
     }
 }
