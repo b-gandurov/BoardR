@@ -101,7 +101,7 @@ namespace BoardR
         public string ViewInfoDetailed()
         {
             StringBuilder detailedInfo = new StringBuilder();
-            FieldInfo[] fields = this.GetType().GetFields(BindingFlags.Instance);
+            FieldInfo[] fields = this.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields)
             {
                 object fieldValue = field.GetValue(this);
