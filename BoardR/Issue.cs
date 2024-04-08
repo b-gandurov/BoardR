@@ -9,8 +9,8 @@ namespace BoardR
     class Issue : BoardItem
     {
         private string _description;
-        public Issue(string title, string description, DateTime dueDate)
-            : base(title, dueDate, Status.Open)
+        public Issue(string title, string description, DateTime dueDate, Status status = Status.Open)
+            : base(title, dueDate, status)
         {
 
             if (string.IsNullOrEmpty(description))
@@ -22,7 +22,7 @@ namespace BoardR
                 _description = description;
             }
 
-            AddEventLog(_description);
+            CreateEventLog(_description);
         }
 
         public string Description

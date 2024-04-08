@@ -1,15 +1,16 @@
-﻿using System;
+﻿using BoardR.Helpers;
+using System.Reflection;
 using System.Text;
 
 namespace BoardR
 {
     public class BoardItem
     {
-        protected internal string _title;
-        protected internal DateTime _dueDate;
-        protected internal Status _status;
-        protected internal List<EventLog> _history = new List<EventLog>();
-        protected internal string dateFormat = "dd-MM-yyyy";
+        protected string _title;
+        protected DateTime _dueDate;
+        protected Status _status;
+        private List<EventLog> _history = new List<EventLog>(); //to remain private
+        protected string dateFormat = "dd-MM-yyyy";
 
         public BoardItem(string title, DateTime dueDate, Status status)
         {
@@ -17,7 +18,6 @@ namespace BoardR
             _title = title;
             _dueDate = dueDate;
             _status = status;
-            //_history.Add(new EventLog($"Created {this.GetType().Name}: '{title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
         }
 
         public string Title
@@ -28,15 +28,9 @@ namespace BoardR
             }
             set
             {
-                if (value.Length >= 5 && value.Length <= 30 && !string.IsNullOrWhiteSpace(value))
-                {
-                    _history.Add(new EventLog($"Title changed from '{_title}' to '{value}'"));
-                    _title = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Title must be between 5 and 30 characters long.");
-                }
+                ValidationHelpers.ValidateString(value, "Title");
+                ChangeEventLog(_title, value, "Title");
+                _title = value;
             }
         }
 
@@ -50,8 +44,7 @@ namespace BoardR
             {
                 if (value >= DateTime.Now)
                 {
-                    string message = $"DueDate changed from '{_dueDate.ToString(dateFormat)}' to '{value.ToString(dateFormat)}'";
-                    _history.Add(new EventLog(message));
+                    ChangeEventLog(_dueDate.ToString(dateFormat), value.ToString(dateFormat), "DueDate");
                     _dueDate = value;
                 }
                 else
@@ -76,7 +69,8 @@ namespace BoardR
             {
                 Status previousStatus = _status;
                 _status++;
-                _history.Add(new EventLog($"Status changed from {previousStatus} to {_status}"));
+                ChangeEventLog(previousStatus.ToString(), _status.ToString(), "Status");
+                //_history.Add(new EventLog($"Status changed from {previousStatus} to {_status}"));
             }
             else
             {
@@ -90,7 +84,8 @@ namespace BoardR
             {
                 Status previousStatus = _status;
                 _status--;
-                _history.Add(new EventLog($"Status changed from {previousStatus} to {_status}"));
+                ChangeEventLog(previousStatus.ToString(), _status.ToString(), "Status");
+                //_history.Add(new EventLog($"Status changed from {previousStatus} to {_status}"));
             }
             else
             {
@@ -101,6 +96,19 @@ namespace BoardR
         public string ViewInfo()
         {
             return $"'{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]";
+        }
+
+        public string ViewInfoDetailed()
+        {
+            StringBuilder detailedInfo = new StringBuilder();
+            FieldInfo[] fields = this.GetType().GetFields(BindingFlags.Instance);
+            foreach (var field in fields)
+            {
+                object fieldValue = field.GetValue(this);
+                string fieldInfo = $"{field.Name}: {(fieldValue != null ? fieldValue.ToString() : "null")}";
+                detailedInfo.AppendLine(fieldInfo);
+            }
+            return detailedInfo.ToString();
         }
 
         public string ViewHistory()
@@ -119,17 +127,23 @@ namespace BoardR
             return historyLog.ToString();
         }
 
-        public void AddEventLog(string description = "No description")
+        public void CreateEventLog(string description = "No description")
         {
+            string generalLogDetails = $"{this.GetType().Name}: '{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]";
             if (this.GetType().Name == "Task")
             {
-                _history.Add(new EventLog($"Created {this.GetType().Name}: '{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
+                _history.Add(new EventLog($"Created {generalLogDetails}"));
             }
             else if (this.GetType().Name =="Issue")
             {
-                _history.Add(new EventLog($"Created {this.GetType().Name}: '{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]. Description: {description}"));
+                _history.Add(new EventLog($"Created {generalLogDetails}. Description: {description}"));
             }
             
+        }
+        public void ChangeEventLog(string currentValue, string newValue, string stringValue)
+        {
+            _history.Add(new EventLog($"{stringValue} changed from '{currentValue}' to '{newValue}'"));
+
         }
     }
 }
