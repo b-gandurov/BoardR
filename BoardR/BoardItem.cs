@@ -9,8 +9,8 @@ namespace BoardR
         protected string _title;
         protected DateTime _dueDate;
         protected Status _status;
-        private List<EventLog> _history = new List<EventLog>(); //to remain private
-        private string dateFormat = "dd-MM-yyyy"; //to remain private
+        private readonly List<EventLog> _history = new List<EventLog>(); //to remain private and readonly
+        private const string dateFormat = "dd-MM-yyyy"; //to remain private
 
         public BoardItem(string title, DateTime dueDate, Status status)
         {
