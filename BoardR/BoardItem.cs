@@ -5,19 +5,19 @@ namespace BoardR
 {
     public class BoardItem
     {
-        private string _title;
-        private DateTime _dueDate;
-        private Status _status;
-        private List<EventLog> _history = new List<EventLog>();
-        private string dateFormat = "dd-MM-yyyy";
+        protected internal string _title;
+        protected internal DateTime _dueDate;
+        protected internal Status _status;
+        protected internal List<EventLog> _history = new List<EventLog>();
+        protected internal string dateFormat = "dd-MM-yyyy";
 
-        public BoardItem(string title, DateTime dueDate)
+        public BoardItem(string title, DateTime dueDate, Status status)
         {
-
+            
             _title = title;
             _dueDate = dueDate;
-            _status = Status.Open;
-            _history.Add(new EventLog($"Item created: '{title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
+            _status = status;
+            //_history.Add(new EventLog($"Created {this.GetType().Name}: '{title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
         }
 
         public string Title
@@ -42,7 +42,10 @@ namespace BoardR
 
         public DateTime DueDate
         {
-            get => _dueDate;
+            get
+            {
+                return _dueDate;
+            }
             set
             {
                 if (value >= DateTime.Now)
@@ -97,7 +100,7 @@ namespace BoardR
 
         public string ViewInfo()
         {
-            return $"'{_title}', [{_status}|{_dueDate.ToString("dd-MM-yyyy")}]";
+            return $"'{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]";
         }
 
         public string ViewHistory()
@@ -114,6 +117,19 @@ namespace BoardR
             }
 
             return historyLog.ToString();
+        }
+
+        public void AddEventLog(string description = "No description")
+        {
+            if (this.GetType().Name == "Task")
+            {
+                _history.Add(new EventLog($"Created {this.GetType().Name}: '{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]"));
+            }
+            else if (this.GetType().Name =="Issue")
+            {
+                _history.Add(new EventLog($"Created {this.GetType().Name}: '{_title}', [{_status}|{_dueDate.ToString(dateFormat)}]. Description: {description}"));
+            }
+            
         }
     }
 }

@@ -3,7 +3,7 @@
     public enum Status
     {
         Open,
-        Todo,
+        ToDo,
         InProgress,
         Done,
         Verified

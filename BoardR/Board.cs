@@ -24,5 +24,13 @@ namespace BoardR
                 return items.Count;
             }
         }
+
+        public static void PrintItems()
+        {
+            foreach (BoardItem item in items)
+            {
+                Console.WriteLine(item.ViewInfo());
+            }
+        }
     }
 }
