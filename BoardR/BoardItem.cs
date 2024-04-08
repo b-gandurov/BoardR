@@ -10,7 +10,7 @@ namespace BoardR
         protected DateTime _dueDate;
         protected Status _status;
         private List<EventLog> _history = new List<EventLog>(); //to remain private
-        protected string dateFormat = "dd-MM-yyyy";
+        private string dateFormat = "dd-MM-yyyy"; //to remain private
 
         public BoardItem(string title, DateTime dueDate, Status status)
         {
@@ -104,9 +104,18 @@ namespace BoardR
             FieldInfo[] fields = this.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
             foreach (var field in fields)
             {
-                object fieldValue = field.GetValue(this);
-                string fieldInfo = $"{field.Name}: {(fieldValue != null ? fieldValue.ToString() : "null")}";
-                detailedInfo.AppendLine(fieldInfo);
+                var fieldValue = field.GetValue(this);
+                if (fieldValue is DateTime dateTimeValue)
+                {
+                    //for displaying duedate field formated with a default dateFromat template
+                    string formattedDate = dateTimeValue.ToString(dateFormat);
+                    detailedInfo.AppendLine($"{field.Name}: {formattedDate}");
+                }
+                else
+                {
+                    string fieldInfo = $"{field.Name}: {(fieldValue != null ? fieldValue.ToString() : "null")}";
+                    detailedInfo.AppendLine(fieldInfo);
+                }
             }
             return detailedInfo.ToString();
         }

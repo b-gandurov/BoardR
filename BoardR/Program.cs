@@ -15,12 +15,13 @@ class Program
         //task.Title = "Title";
         //Console.WriteLine(task.ViewHistory());
         //Console.WriteLine(task.ViewInfo());
+        //Console.WriteLine(task.ViewInfoDetailed());
 
-        var issue = new Issue("App flow tests?", "We need to test the App!", DateTime.Now.AddDays(1));
-        Console.WriteLine(issue.Title); // App flow tests?
-        Console.WriteLine(issue.Description); // We need to test the App!
-        Console.WriteLine(issue.Status); // Open
-        Console.WriteLine(issue.ViewInfo());
-        Console.WriteLine(issue.ViewInfoDetailed());
+        //var issue = new Issue("App flow tests?", "We need to test the App!", DateTime.Now.AddDays(1));
+        //Console.WriteLine(issue.Title); // App flow tests?
+        //Console.WriteLine(issue.Description); // We need to test the App!
+        //Console.WriteLine(issue.Status); // Open
+        //Console.WriteLine(issue.ViewInfo());
+        //Console.WriteLine(issue.ViewInfoDetailed());
     }
 }
